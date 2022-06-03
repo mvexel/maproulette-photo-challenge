@@ -1,35 +1,36 @@
 import sys
 import os 
-from utils import init_logger
-from aws import S3
+import logging
 from photo import Photo
+from hosting import Imgur
 from config import settings
 import maproulette
 
 if __name__ == "__main__":
 
-	logger = init_logger("root")
+	# Set up logging
+	logging.basicConfig(
+		stream=sys.stdout, 
+		level=settings.get("log_level", 'INFO'),
+		format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+	logger = logging.getLogger('main')
 
 	# Collect photo locations
 	photos = []
+	
+	imgur_hoster = Imgur(credentials=settings['imgur_credentials'])
+
 	for f in os.listdir(settings.get("photos_dir")):
-		photo = Photo(os.path.join(settings.get("photos_dir"), f))
-		if photo.is_jpeg:
+		photo = Photo(
+			local_path=os.path.join(settings.get("photos_dir"), f),
+			hoster=imgur_hoster)
+		if photo.is_jpeg and photo.location:
+			photo.upload()
+			logger.debug('{} uploaded to {}'.format(f, photo.url))
 			photos.append(photo)
+			logger.debug('{} added to photos list'.format(f))
 
-	logger.info("{} photos found...".format(len(photos)))
-
-	# Initialize S3 session
-	s3_session = S3('maproulette')
-
-	# Upload to S3
-	logger.info("uploading files to S3...")
-	for photo in photos:
-		if s3_session.object_exists(settings.get("s3_bucket_name"), photo.name):
-			logger.info("{} already in bucket".format(photo.name))
-		else:
-			logger.info("uploading {}...".format(photo.name))
-			s3_session.upload_file(photo.local_path, settings.get("s3_bucket_name"))
+	logger.info("{} photos with location found.".format(len(photos)))
 
 	# Build Challenge creation payload
 	challenge_payload = {
