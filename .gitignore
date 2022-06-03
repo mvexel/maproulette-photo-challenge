@@ -3,3 +3,4 @@ __pycache__/
 photos/
 venv/
 config.py
+test.py
