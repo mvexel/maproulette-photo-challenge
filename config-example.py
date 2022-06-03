@@ -3,23 +3,19 @@ settings = {
 	# ---------------------------
 	# The path to the directory on your local machine where your geotagged
 	# images are located. May be relative.
-	"photos_dir": 				"/path/to/geotagged/photos",
+	"photos_dir": 					"/path/to/geotagged/photos",
 
-	# AWS S3
-	# ------
-	# You need full access to an S3 bucket on AWS to store the image files.
-	# We use the shared credentials at ~/.aws/credentials to locate a profile 
-	# that has full access to this bucket. You need to define both the bucket name
-	# and the profile name here.
-	"s3_profile_name":  		"YOUR AWS CREDENTIALS PROFILE NAME HERE",
-	"s3_bucket_name": 			"YOUR AWS BUCKET NAME HERE",
+	# Imgur credentials
+	# Each image hoster class requires credentials which are documented at that class.
+	# They take the form of a dictionary that you should define here.
+	'imgur_credentials': 			{'Client-ID': '6ae1d910ca321bb'},
 
 	# MapRoulette API key
 	# -------------------
 	# Your personal API key, which enables you to add new challenges using the
 	# MapRoulette API. Go to https://maproulette.org/user/profile and scroll all
 	# the way to the bottom to find it.
-	"maproulette_api_key": 		"YOUR_MR_API_KEY_HERE",
+	"maproulette_api_key": 			"YOUR_MR_API_KEY_HERE",
 
 	# MapRoulette server and protocol
 	# -------------------------------
@@ -50,4 +46,7 @@ settings = {
 
 	# The challenge's difficulty. 2 is normal
 	"challenge_difficulty": 	2
+
+	# Log level for logging output. This is useful if you're developing. Default is 'INFO'
+	# 'log_level':					'DEBUG',
 }
