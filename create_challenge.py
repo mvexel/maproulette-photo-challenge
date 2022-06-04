@@ -4,14 +4,16 @@ import logging
 from photo import Photo
 from hosting import Imgur
 from config import settings
+from geojson import Point, Feature, FeatureCollection
 import maproulette
+import json
 
 if __name__ == "__main__":
 
 	# Set up logging
 	logging.basicConfig(
 		stream=sys.stdout, 
-		level=settings.get("log_level", 'INFO'),
+		level=settings.get("log_level", 'DEBUG'),
 		format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 	logger = logging.getLogger('main')
 
@@ -51,4 +53,21 @@ if __name__ == "__main__":
 
 	challenge_api = maproulette.Challenge(config)
 
+	# Create challenge
+	#challenge_id = challenge_api.create_challenge(data=challenge_payload)['data'].get('id')
+	challenge_id = 23741
 	# Build tasks
+
+	task_api = maproulette.Task(config)
+
+	for f in photos:
+		instruction = f'![alt]({f.url})'
+		geometries = FeatureCollection([Feature(geometry=Point((f.location[0], f.location[1])))])
+		name = f.name
+		t = maproulette.TaskModel(
+			parent=challenge_id,
+			instruction=instruction,
+			geometries=json.dumps(geometries),
+			name=name
+		)
+		task_api.create_task(t.to_dict())

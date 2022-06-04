@@ -4,3 +4,4 @@ photos/
 venv/
 config.py
 test.py
+.idea/
